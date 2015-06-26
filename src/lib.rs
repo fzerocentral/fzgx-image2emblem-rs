@@ -31,7 +31,3 @@ pub fn seconds_since_2000(now: chrono::datetime::DateTime<UTC>) -> f64 {
         None => panic!("No microseconds!")
     }
 }
-
-pub fn make_emblem() {
-
-}
