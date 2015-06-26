@@ -53,12 +53,8 @@ fn read_block(emblem_data: &mut Vec<u8>, image: &image::DynamicImage,
                     }
                 }
             }
-            // print!("{} {} {} {} ", r, g, b, a);
         }
-
-        // println!("");
     }
-    // println!("");
 }
 
 
