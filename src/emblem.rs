@@ -23,30 +23,6 @@ fn gametitle() -> [u8; 32] {
     gametitle
 }
 
-fn icon() -> [u8; 2048] {
-    let icon_path = Path::new("data/emblem_icon");
-    let display = icon_path.display();
-    let mut file = match File::open(&icon_path) {
-        // The `description` method of `io::Error` returns a string that
-        // describes the error
-        Err(why) => panic!("couldn't open '{}': {}", display, why),
-        Ok(file) => file,
-    };
-
-    let mut v: Vec<u8> = Vec::new();
-    match file.read_to_end(&mut v) {
-        Err(why) => panic!("couldn't read: {}", why),
-        Ok(_) => {
-            let mut arr: [u8; 2048] = [0x00; 2048];
-            for index in 0..v.len() {
-                arr[index] = v[index];
-            }
-
-            arr
-        }
-    }
-}
-
 fn read_block(emblem_data: &mut Vec<u8>, image: &image::DynamicImage,
   alpha_threshold: i8, i: u32, j: u32) {
     let i = i as u32;
@@ -191,7 +167,7 @@ impl Emblem {
     }
 
     pub fn set_icon_data(self: &mut Self) {
-        let icon = icon();
+        let icon = include_bytes!("../data/emblem_icon");
 
         for i in 0..icon.len() {
             self.icon_data[i] = icon[i];
@@ -199,21 +175,15 @@ impl Emblem {
     }
 
     pub fn set_banner_data(self: &mut Self, image: image::DynamicImage, alpha_threshold: i8) {
-        let mut v = Vec::new();
-        let mut banner_file = match File::open("data/emblem_banner_base") {
-            Err(why) => panic!("couldn't open file: {}", why),
-            Ok(file) => file,
-        };
+        let mut v: Vec<u8> = Vec::new();
+        let banner_file = include_bytes!("../data/emblem_banner_base");
+        let mut chunked_banner = banner_file.chunks(0x200);
 
         for block_row in (0..32).step(4) {
-            let mut banner_data: [u8; 0x200] = [0x00; 0x200];
-            match banner_file.read(&mut banner_data) {
-                Err(err) => panic!("Could not read banner file: {}", err),
-                _        => { ; }
-            };
-
-            for byte in banner_data.iter() {
-                v.push(*byte);
+            for chunk in chunked_banner.nth(0) {
+                for byte in chunk {
+                    v.push(*byte);
+                }
             }
 
             for block_col in (0..32).step(4) {
