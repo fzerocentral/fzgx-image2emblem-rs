@@ -1,16 +1,13 @@
 extern crate byteorder;
-extern crate image;
-extern crate itertools;
-
 use self::byteorder::{ByteOrder, BigEndian};
+
+extern crate image;
 use self::image::GenericImage;
+
+extern crate itertools;
 use self::itertools::Itertools;
 
-use std::io::prelude::*;
-use std::fs::File;
-use std::path::Path;
 use checksum::checksum;
-
 
 fn gametitle() -> [u8; 32] {
     let mut gametitle: [u8; 32] = [0x00; 32];
