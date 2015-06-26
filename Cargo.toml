@@ -1,0 +1,4 @@
+[package]
+name = "image2emblem"
+version = "0.1.0"
+authors = ["Ricardo Mendes <rokusu@gmail.com>"]
