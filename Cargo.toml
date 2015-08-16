@@ -2,6 +2,16 @@
 name = "image2emblem"
 version = "0.1.0"
 authors = ["Ricardo Mendes <rokusu@gmail.com>"]
+description = "Converts an image into an F-Zero GX emblem"
+documentation = "http://fzerocentral.github.io/fzgx-image2emblem-rs/image2emblem/index.html"
+homepage = "https://github.com/fzerocentral/fzgx-image2emblem-rs"
+repository = "https://github.com/fzerocentral/fzgx-image2emblem-rs"
+readme = "README.md"
+license = "MIT"
+
+[[bin]]
+name = "emblem"
+path = "src/main.rs"
 
 [dependencies]
 byteorder = "0.3.9"

@@ -2,25 +2,27 @@ extern crate byteorder;
 
 use self::byteorder::{ByteOrder, BigEndian};
 
-pub fn checksum(bytes: Vec<&u8>) -> [u8; 2] {
-  let mut checksum: u16 = 0xFFFF;
-  let generator_polynomial = 0x8408;
+const GENERATOR_POLYNOMIAL: u16 = 0x8408;
 
-  for byte in bytes {
-    checksum = checksum ^ (*byte as u16);
-
-    for _ in (0..8) {
-      if checksum & 1 == 1 {
-        checksum = (checksum >> 1) ^ generator_polynomial
-      } else {
-        checksum = checksum >> 1
-      }
+fn checksum_bits(checksum: u16, bits_in_byte: i8) -> u16 {
+  (0..bits_in_byte).fold(checksum, |acc, _| {
+    if acc & 1 == 1 {
+      (acc >> 1) ^ GENERATOR_POLYNOMIAL
+    } else {
+      acc >> 1
     }
-  }
+  })
+}
 
-  checksum = checksum ^ 0xFFFF;
+pub fn checksum(bytes: Vec<&u8>) -> [u8; 2] {
+  let initial_mask: u16 = 0xFFFF;
+  let bits_in_byte = 8;
+  let checksum: u16 = initial_mask ^ bytes.iter().fold(initial_mask, |acc, &item| {
+    checksum_bits(acc ^ (*item as u16), bits_in_byte)
+  });
+
   let mut buf = [0u8; 2];
-  byteorder::BigEndian::write_u16(&mut buf, checksum as u16);
+  byteorder::BigEndian::write_u16(&mut buf, checksum);
 
   return buf;
 }
