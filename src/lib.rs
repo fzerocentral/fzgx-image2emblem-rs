@@ -2,9 +2,11 @@ pub mod checksum;
 pub mod emblem;
 
 extern crate chrono;
+extern crate image;
 
 
 use chrono::*;
+use image::GenericImage;
 
 
 pub fn short_name(seconds: f64) -> String {
@@ -31,3 +33,13 @@ pub fn seconds_since_2000(now: chrono::datetime::DateTime<UTC>) -> f64 {
         None => panic!("No microseconds!")
     }
 }
+
+pub fn crop_image(img: &mut image::DynamicImage) {
+    for i in (0..64) {
+        (*img).put_pixel( i,  0, image::Rgba([0u8, 0u8, 0u8, 0u8]));
+        (*img).put_pixel( i, 63, image::Rgba([0u8, 0u8, 0u8, 0u8]));
+        (*img).put_pixel( 0,  i, image::Rgba([0u8, 0u8, 0u8, 0u8]));
+        (*img).put_pixel(63,  i, image::Rgba([0u8, 0u8, 0u8, 0u8]));
+    }
+}
+

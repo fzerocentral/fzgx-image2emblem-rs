@@ -21,6 +21,10 @@ fn main() {
              .help("Sets the input file to use")
              .required(true)
              .index(1))
+        .arg(Arg::with_name("crop-edges")
+            .short("c")
+            .long("--crop-edges")
+            .help("Crops the edges"))
         .arg(Arg::with_name("emblem-filename")
             .help("Specify a custom emblem filename to put in place of the default timestamp."))
         .subcommand(SubCommand::new("test")
@@ -47,8 +51,12 @@ fn main() {
     let short_name = image2emblem::short_name(seconds_since_2000);
     let full_name = image2emblem::full_name(&short_name);
 
-    let img64 = img.crop(0, 0, 64, 64);
+    let mut img64 = img.crop(0, 0, 64, 64);
     let img32 = img64.resize(32, 32, image::FilterType::Lanczos3);
+
+    if matches.is_present("crop-edges") {
+        image2emblem::crop_image(&mut img64);
+    }
 
     emblem.set_filename(short_name);
     emblem.set_timestamp(seconds_since_2000 as u32);
