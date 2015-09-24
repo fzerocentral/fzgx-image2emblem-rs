@@ -20,8 +20,9 @@ fn gametitle() -> [u8; 32] {
     gametitle
 }
 
-fn read_block(emblem_data: &mut Vec<u8>, image: &image::DynamicImage,
-  alpha_threshold: i8, i: u32, j: u32) {
+fn read_block(emblem_data: &mut Vec<u8>,
+              image: &image::DynamicImage,
+              alpha_threshold: i8, i: u32, j: u32) {
     let i = i as u32;
     let j = j as u32;
 
@@ -121,13 +122,15 @@ impl Default for Emblem {
     }
 }
 
+fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
+    for i in 0..bytes.len() {
+        initial[i] = bytes[i];
+    }
+}
+
 impl Emblem {
     pub fn set_filename(self: &mut Self, filename: String) {
-        let bytes = filename.as_bytes();
-
-        for i in 0..bytes.len() {
-            self.filename[i] = bytes[i];
-        }
+        make_bytes(&mut self.filename, &filename.as_bytes());
     }
 
     pub fn set_timestamp(self: &mut Self, time: u32) {
@@ -138,11 +141,7 @@ impl Emblem {
     }
 
     pub fn set_comment(self: &mut Self, comment: String) {
-        let comment_bytes = comment.as_bytes();
-
-        for i in 0..comment_bytes.len() {
-            self.file_comment[i] = comment_bytes[i];
-        }
+        make_bytes(&mut self.file_comment, &comment.as_bytes());
     }
 
     pub fn set_emblem_data(self: &mut Self, image: image::DynamicImage, alpha_threshold: i8) {

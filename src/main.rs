@@ -44,29 +44,12 @@ fn main() {
         Err(why) => panic!("couldn't open '{:?}': {}", path, why)
     };
     let now = chrono::UTC::now();
-    let seconds_since_2000 = image2emblem::seconds_since_2000(now);
     let alpha_threshold: i8 = 1;
-    let mut emblem = image2emblem::emblem::Emblem::default();
-
+    let seconds_since_2000 = image2emblem::seconds_since_2000(now);
     let short_name = image2emblem::short_name(seconds_since_2000);
     let full_name = image2emblem::full_name(&short_name);
 
-    let mut img64 = img.crop(0, 0, 64, 64);
-    let img32 = img64.resize(32, 32, image::FilterType::Lanczos3);
-
-    if matches.is_present("crop-edges") {
-        image2emblem::crop_image(&mut img64);
-    }
-
-    emblem.set_filename(short_name);
-    emblem.set_timestamp(seconds_since_2000 as u32);
-    let comment = format!("{} (Created using Rust awesomeness)", now.format("%y/%m/%d %H:%M"));
-
-    emblem.set_comment(comment);
-    emblem.set_emblem_data(img64, alpha_threshold);
-    emblem.set_banner_data(img32, alpha_threshold);
-    emblem.set_icon_data();
-    emblem.set_checksum();
+    let emblem = image2emblem::make_emblem(&mut img, &matches, short_name, seconds_since_2000, now, alpha_threshold);
 
     let mut emblem_file = match File::create(full_name) {
         Ok(name) => name,

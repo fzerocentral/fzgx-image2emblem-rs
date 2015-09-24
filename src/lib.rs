@@ -1,13 +1,13 @@
 pub mod checksum;
 pub mod emblem;
+pub mod image;
 
 extern crate chrono;
-extern crate image;
-
-
 use chrono::*;
-use image::GenericImage;
 
+extern crate image as img;
+
+extern crate clap;
 
 pub fn short_name(seconds: f64) -> String {
   let multiplier: f64 = 40500000f64;
@@ -20,7 +20,7 @@ pub fn full_name(filename: &str) -> String {
   format!("8P-GFZE-{}.gci", filename)
 }
 
-pub fn python_total_seconds(microseconds: i64) -> f64 {
+fn python_total_seconds(microseconds: i64) -> f64 {
     microseconds as f64 / 10i64.pow(6) as f64
 }
 
@@ -34,12 +34,24 @@ pub fn seconds_since_2000(now: chrono::datetime::DateTime<UTC>) -> f64 {
     }
 }
 
-pub fn crop_image(img: &mut image::DynamicImage) {
-    for i in (0..64) {
-        (*img).put_pixel( i,  0, image::Rgba([0u8, 0u8, 0u8, 0u8]));
-        (*img).put_pixel( i, 63, image::Rgba([0u8, 0u8, 0u8, 0u8]));
-        (*img).put_pixel( 0,  i, image::Rgba([0u8, 0u8, 0u8, 0u8]));
-        (*img).put_pixel(63,  i, image::Rgba([0u8, 0u8, 0u8, 0u8]));
-    }
-}
+pub fn make_emblem(img: &mut self::img::DynamicImage, matches: &clap::ArgMatches, short_name: String, seconds_since_2000: f64, now: chrono::datetime::DateTime<UTC>, alpha_threshold: i8) -> self::emblem::Emblem {
+    let mut emblem = self::emblem::Emblem::default();
+    let mut img64 = self::image::crop(img);
+    let img32 = self::image::resize(&mut img64);
 
+    if matches.is_present("crop-edges") {
+        self::image::trim_edges(&mut img64);
+    }
+
+    emblem.set_filename(short_name);
+    emblem.set_timestamp(seconds_since_2000 as u32);
+    let comment = format!("{} (Created using Rust awesomeness)", now.format("%y/%m/%d %H:%M"));
+
+    emblem.set_comment(comment);
+    emblem.set_emblem_data(img64, alpha_threshold);
+    emblem.set_banner_data(img32, alpha_threshold);
+    emblem.set_icon_data();
+    emblem.set_checksum();
+
+    return emblem;
+}
