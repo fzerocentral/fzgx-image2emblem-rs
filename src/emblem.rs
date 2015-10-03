@@ -9,6 +9,21 @@ use self::itertools::Itertools;
 
 use checksum::checksum;
 
+macro_rules! byte {
+    ( $i:ident, $v:ident << $elem:expr ) => {
+        $v[$i] = $elem;
+        $i += 1;
+    }
+}
+
+macro_rules! bytes {
+    ( $i:ident , $v:ident << $ary:expr ) => {
+        for byte in $ary.iter() {
+            $v[$i] = *byte;
+        }
+    }
+}
+
 fn gametitle() -> [u8; 32] {
     let mut gametitle: [u8; 32] = [0x00; 32];
     let fzgx = "F-Zero GX".as_bytes();
@@ -220,94 +235,29 @@ impl Emblem {
         let mut v: [u8; 24640] = [0x00; 24640];
         let mut index = 0;
 
-        for byte in self.gamecode.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.company.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-
-        v[index] = self.reserved01;
-        index += 1;
-        v[index] = self.banner_fmt;
-        index += 1;
-
-        for byte in self.filename.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.timestamp.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.icon_addr.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.icon_fmt.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.icon_speed.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-
-        v[index] = self.permission;
-        index += 1;
-        v[index] = self.copy_counter;
-        index += 1;
-
-        for byte in self.index.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.filesize8.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.reserved02.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.comment_addr.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.checksum.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.something3.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.game_title.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.file_comment.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.banner_data.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.icon_data.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.emblem_data.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
-        for byte in self.padding.iter() {
-            v[index] = *byte;
-            index += 1;
-        }
+        bytes!(index, v << self.gamecode);
+        bytes!(index, v << self.company);
+        byte!(index, v << self.reserved01);
+        byte!(index, v << self.banner_fmt);
+        bytes!(index, v << self.filename);
+        bytes!(index, v << self.timestamp);
+        bytes!(index, v << self.icon_addr);
+        bytes!(index, v << self.icon_fmt);
+        bytes!(index, v << self.icon_speed);
+        byte!(index, v << self.permission);
+        byte!(index, v << self.copy_counter);
+        bytes!(index, v << self.index);
+        bytes!(index, v << self.filesize8);
+        bytes!(index, v << self.reserved02);
+        bytes!(index, v << self.comment_addr);
+        bytes!(index, v << self.checksum);
+        bytes!(index, v << self.something3);
+        bytes!(index, v << self.game_title);
+        bytes!(index, v << self.file_comment);
+        bytes!(index, v << self.banner_data);
+        bytes!(index, v << self.icon_data);
+        bytes!(index, v << self.emblem_data);
+        bytes!(index, v << self.padding);
 
         v
     }
