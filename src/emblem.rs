@@ -145,7 +145,7 @@ impl Default for Emblem {
     }
 }
 
-fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
+pub fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
     for i in 0..bytes.len() {
         initial[i] = bytes[i];
     }
@@ -153,14 +153,11 @@ fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
 
 impl Emblem {
     pub fn set_filename(self: &mut Self, filename: String) {
-        make_bytes(&mut self.memcard.filename, &filename.as_bytes());
+        self.memcard.set_filename(filename);
     }
 
     pub fn set_timestamp(self: &mut Self, time: u32) {
-        let mut buf = [0x00; 4];
-        byteorder::BigEndian::write_u32(&mut buf, time);
-
-        self.memcard.timestamp = buf;
+        self.memcard.set_timestamp(time);
     }
 
     pub fn set_comment(self: &mut Self, comment: String) {

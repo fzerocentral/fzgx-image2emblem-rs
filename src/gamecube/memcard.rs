@@ -1,3 +1,8 @@
+extern crate byteorder;
+use self::byteorder::{ByteOrder, BigEndian};
+
+use super::super::emblem::make_bytes;
+
 pub struct Memcard {
     pub gamecode:     [u8; 4],  // GFZE
     pub company:      [u8; 2],  // 8P
@@ -14,4 +19,17 @@ pub struct Memcard {
     pub filesize8:    [u8; 2], // 0x00 0x03
     pub reserved02:   [u8; 2], // 0xFF 0xFF
     pub comment_addr: [u8; 4], // 0x00 0x00 0x00 0x04
+}
+
+impl Memcard {
+    pub fn set_filename(self: &mut Self, filename: String) {
+        make_bytes(&mut self.filename, &filename.as_bytes());
+    }
+
+    pub fn set_timestamp(self: &mut Self, time: u32) {
+        let mut buf = [0x00; 4];
+        byteorder::BigEndian::write_u32(&mut buf, time);
+
+        self.timestamp = buf;
+    }
 }
