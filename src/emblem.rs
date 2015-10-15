@@ -25,6 +25,15 @@ macro_rules! bytes {
     }
 }
 
+macro_rules! push {
+    ( $v:ident << $ary:expr ) => {
+        for byte in $ary.iter() {
+            $v.push(byte);
+        }
+    }
+}
+
+
 fn gametitle() -> [u8; 32] {
     let mut gametitle: [u8; 32] = [0x00; 32];
     let fzgx = "F-Zero GX".as_bytes();
@@ -207,27 +216,13 @@ impl Emblem {
     pub fn set_checksum(self: &mut Self) {
         let mut v = Vec::new();
 
-        for byte in self.something3.iter() {
-            v.push(byte);
-        }
-        for byte in self.game_title.iter() {
-            v.push(byte);
-        }
-        for byte in self.file_comment.iter() {
-            v.push(byte);
-        }
-        for byte in self.banner_data.iter() {
-            v.push(byte);
-        }
-        for byte in self.icon_data.iter() {
-            v.push(byte);
-        }
-        for byte in self.emblem_data.iter() {
-            v.push(byte);
-        }
-        for byte in self.padding.iter() {
-            v.push(byte);
-        }
+        push!(v << self.something3);
+        push!(v << self.game_title);
+        push!(v << self.file_comment);
+        push!(v << self.banner_data);
+        push!(v << self.icon_data);
+        push!(v << self.emblem_data);
+        push!(v << self.padding);
 
         self.checksum = checksum(v);
     }
