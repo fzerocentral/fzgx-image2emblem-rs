@@ -16,9 +16,9 @@ fn checksum_bits(checksum: u16, bits_in_byte: i8) -> u16 {
 pub fn checksum(bytes: Vec<&u8>) -> [u8; 2] {
   let initial_mask: u16 = 0xFFFF;
   let bits_in_byte = 8;
-  let checksum: u16 = initial_mask ^ bytes.iter().fold(initial_mask, |acc, &item| {
+  let checksum: u16 = bytes.iter().fold(initial_mask, |acc, &item| {
     checksum_bits(acc ^ (*item as u16), bits_in_byte)
-  });
+  }) ^ initial_mask;
 
   let mut buf = [0u8; 2];
   byteorder::BigEndian::write_u16(&mut buf, checksum);
