@@ -1,6 +1,7 @@
 pub mod checksum;
 pub mod emblem;
 pub mod image;
+pub mod gamecube;
 
 extern crate chrono;
 use chrono::*;

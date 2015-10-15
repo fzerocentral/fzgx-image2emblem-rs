@@ -8,6 +8,7 @@ extern crate itertools;
 use self::itertools::Itertools;
 
 use checksum::checksum;
+use super::gamecube::memcard;
 
 macro_rules! byte {
     ( $i:ident, $v:ident << $elem:expr ) => {
@@ -81,32 +82,43 @@ fn read_block(emblem_data: &mut Vec<u8>,
 }
 
 
-
 const FZGX: [u8; 4] = *b"GFZE";
 const SEGA: [u8; 2] = *b"8P";
 
 
+/// I'm implementing Default for Memcard here because the F-Zero
+/// emblem file already has a bunch of fields pre-filled that should
+/// always be the same.
+impl Default for memcard::Memcard {
+    fn default() -> Self {
+        memcard::Memcard {
+            gamecode:      FZGX,
+            company:       SEGA,
+            reserved01:    0xFF,
+            banner_fmt:    0x02,
+            filename:     [0x00; 32],
+            timestamp:    [0x00; 4],
+            icon_addr:    [0x00, 0x00, 0x00, 0x60],
+            icon_fmt:     [0x00, 0x02],
+            icon_speed:   [0x00, 0x03],
+            permission:    0x04,
+            copy_counter:  0x00,
+            index:        [0x00, 0x00],
+            filesize8:    [0x00, 0x03],
+            reserved02:   [0xFF, 0xFF],
+            comment_addr: [0x00, 0x00, 0x00, 0x04],
+        }
+    }
+}
+
 pub struct Emblem {
-  gamecode:     [u8; 4],  // GFZE
-  company:      [u8; 2],  // 8P
-  reserved01:    u8,      // 0xFF
-  banner_fmt:    u8,      // 0x02
-  filename:     [u8; 32],
-  timestamp:    [u8; 4],
-  icon_addr:    [u8; 4], // 0x00 0x00 0x00 0x60
-  icon_fmt:     [u8; 2], // 0x00 0x02
-  icon_speed:   [u8; 2], // 0x00 0x03
-  permission:    u8,
-  copy_counter:  u8,
-  index:        [u8; 2],
-  filesize8:    [u8; 2], // 0x00 0x03
-  reserved02:   [u8; 2], // 0xFF 0xFF
-  comment_addr: [u8; 4], // 0x00 0x00 0x00 0x04
+  memcard: memcard::Memcard,
 
   pub checksum:     [u8; 2],
   something3:   [u8; 2], // 0x04 0x01
   game_title:   [u8; 32], // "F-ZERO GX" 0x00...
   file_comment: [u8; 60], // "YY/MM/DD HH:MM" 0x00...
+
   pub banner_data:  [u8; 6144], // banner pixel data (92 x 32 px)
   icon_data:    [u8; 2048], // icon pixel data (64 x 64 px)
   emblem_data:  [u8; 8192], // emblem pixel data (64 x 64 px)
@@ -118,21 +130,7 @@ impl Default for Emblem {
         let game_title = gametitle();
 
         Emblem {
-          gamecode:      FZGX,
-          company:       SEGA,
-          reserved01:    0xFF,
-          banner_fmt:    0x02,
-          filename:     [0x00; 32],
-          timestamp:    [0x00; 4],
-          icon_addr:    [0x00, 0x00, 0x00, 0x60],
-          icon_fmt:     [0x00, 0x02],
-          icon_speed:   [0x00, 0x03],
-          permission:    0x04,
-          copy_counter:  0x00,
-          index:        [0x00, 0x00],
-          filesize8:    [0x00, 0x03],
-          reserved02:   [0xFF, 0xFF],
-          comment_addr: [0x00, 0x00, 0x00, 0x04],
+          memcard:       memcard::Memcard::default(),
 
           checksum:     [0x00; 2],
           something3:   [0x04, 0x01],
@@ -155,14 +153,14 @@ fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
 
 impl Emblem {
     pub fn set_filename(self: &mut Self, filename: String) {
-        make_bytes(&mut self.filename, &filename.as_bytes());
+        make_bytes(&mut self.memcard.filename, &filename.as_bytes());
     }
 
     pub fn set_timestamp(self: &mut Self, time: u32) {
         let mut buf = [0x00; 4];
         byteorder::BigEndian::write_u32(&mut buf, time);
 
-        self.timestamp = buf;
+        self.memcard.timestamp = buf;
     }
 
     pub fn set_comment(self: &mut Self, comment: String) {
@@ -231,21 +229,22 @@ impl Emblem {
         let mut v: [u8; 24640] = [0x00; 24640];
         let mut index = 0;
 
-        bytes!(index, v << self.gamecode);
-        bytes!(index, v << self.company);
-        byte!(index, v << self.reserved01);
-        byte!(index, v << self.banner_fmt);
-        bytes!(index, v << self.filename);
-        bytes!(index, v << self.timestamp);
-        bytes!(index, v << self.icon_addr);
-        bytes!(index, v << self.icon_fmt);
-        bytes!(index, v << self.icon_speed);
-        byte!(index, v << self.permission);
-        byte!(index, v << self.copy_counter);
-        bytes!(index, v << self.index);
-        bytes!(index, v << self.filesize8);
-        bytes!(index, v << self.reserved02);
-        bytes!(index, v << self.comment_addr);
+        bytes!(index, v << self.memcard.gamecode);
+        bytes!(index, v << self.memcard.company);
+        byte!(index, v << self.memcard.reserved01);
+        byte!(index, v << self.memcard.banner_fmt);
+        bytes!(index, v << self.memcard.filename);
+        bytes!(index, v << self.memcard.timestamp);
+        bytes!(index, v << self.memcard.icon_addr);
+        bytes!(index, v << self.memcard.icon_fmt);
+        bytes!(index, v << self.memcard.icon_speed);
+        byte!(index, v << self.memcard.permission);
+        byte!(index, v << self.memcard.copy_counter);
+        bytes!(index, v << self.memcard.index);
+        bytes!(index, v << self.memcard.filesize8);
+        bytes!(index, v << self.memcard.reserved02);
+        bytes!(index, v << self.memcard.comment_addr);
+
         bytes!(index, v << self.checksum);
         bytes!(index, v << self.something3);
         bytes!(index, v << self.game_title);
