@@ -6,10 +6,9 @@ const GENERATOR_POLYNOMIAL: u16 = 0x8408;
 
 fn checksum_bits(checksum: u16, bits_in_byte: i8) -> u16 {
   (0..bits_in_byte).fold(checksum, |acc, _| {
-    if acc & 1 == 1 {
-      (acc >> 1) ^ GENERATOR_POLYNOMIAL
-    } else {
-      acc >> 1
+    match acc & 1 {
+      1 => (acc >> 1) ^ GENERATOR_POLYNOMIAL,
+      _ => acc >> 1
     }
   })
 }
