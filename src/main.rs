@@ -9,7 +9,7 @@ use std::fs::File;
 use std::path::Path;
 use std::io::prelude::*;
 use std::process::exit;
-use clap::{Arg, App, SubCommand};
+use clap::{Arg, App};
 
 
 fn main() {
