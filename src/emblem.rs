@@ -20,6 +20,7 @@ macro_rules! bytes {
     ( $i:ident , $v:ident << $ary:expr ) => {
         for byte in $ary.iter() {
             $v[$i] = *byte;
+            $i += 1;
         }
     }
 }
