@@ -27,13 +27,6 @@ fn main() {
             .help("Crops the edges"))
         .arg(Arg::with_name("emblem-filename")
             .help("Specify a custom emblem filename to put in place of the default timestamp."))
-        .subcommand(SubCommand::new("test")
-                    .about("controls testing features")
-                    .version("1.3")
-                    .author("Someone E. <someone_else@other.com>")
-                    .arg(Arg::with_name("verbose")
-                        .short("v")
-                        .help("print test information verbosely")))
         .get_matches();
 
     println!("Using input file: {}", matches.value_of("INPUT").unwrap());
