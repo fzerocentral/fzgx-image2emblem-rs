@@ -61,7 +61,7 @@ fn read_block(emblem_data: &mut Vec<u8>,
             let a = pixel[3];
 
             match a < alpha_threshold as u8 {
-                true => { emblem_data.push(0x00); },
+                true => { emblem_data.push(0x00); emblem_data.push(0x00); },
                 false => {
                     let red   = (r / 8) as u16;
                     let green = (g / 8) as u16;
