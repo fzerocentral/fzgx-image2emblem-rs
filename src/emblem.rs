@@ -60,8 +60,8 @@ fn read_block(emblem_data: &mut Vec<u8>,
             let b = pixel[2];
             let a = pixel[3];
 
-            match a < alpha_threshold as u8 {
-                true => { emblem_data.push(0x00); emblem_data.push(0x00); },
+            let value: u16 = match a < alpha_threshold as u8 {
+                true => { 0x00 },
                 false => {
                     let red   = (r / 8) as u16;
                     let green = (g / 8) as u16;
@@ -69,13 +69,15 @@ fn read_block(emblem_data: &mut Vec<u8>,
                     let alpha: u16 = 1;
                     let value: u16 = 32768*alpha + 1024*red + 32*green + blue;
 
-                    let mut buf: [u8; 2] = [0x00; 2];
-                    byteorder::BigEndian::write_u16(&mut buf, value);
-
-                    for byte in buf.iter() {
-                        emblem_data.push(*byte);
-                    }
+                    value
                 }
+            };
+
+            let mut buf: [u8; 2] = [0x00; 2];
+            byteorder::BigEndian::write_u16(&mut buf, value);
+
+            for byte in buf.iter() {
+                emblem_data.push(*byte);
             }
         }
     }
