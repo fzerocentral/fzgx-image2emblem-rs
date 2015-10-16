@@ -70,7 +70,7 @@ fn read_block(emblem_data: &mut Vec<u8>,
                     let value: u16 = 32768*alpha + 1024*red + 32*green + blue;
 
                     let mut buf: [u8; 2] = [0x00; 2];
-                    byteorder::BigEndian::write_u16(&mut buf, value as u16);
+                    byteorder::BigEndian::write_u16(&mut buf, value);
 
                     for byte in buf.iter() {
                         emblem_data.push(*byte);
