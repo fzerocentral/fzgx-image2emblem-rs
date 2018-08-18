@@ -1,5 +1,5 @@
 extern crate byteorder;
-use self::byteorder::{ByteOrder, BigEndian};
+use self::byteorder::{BigEndian, ByteOrder};
 
 extern crate image;
 use self::image::GenericImage;
@@ -7,33 +7,32 @@ use self::image::GenericImage;
 extern crate itertools;
 use self::itertools::Itertools;
 
-use checksum::checksum;
 use super::gamecube::memcard;
+use checksum::checksum;
 
 macro_rules! byte {
-    ( $i:ident, $v:ident << $elem:expr ) => {
+    ($i:ident, $v:ident << $elem:expr) => {
         $v[$i] = $elem;
         $i += 1;
-    }
+    };
 }
 
 macro_rules! bytes {
-    ( $i:ident , $v:ident << $ary:expr ) => {
+    ($i:ident, $v:ident << $ary:expr) => {
         for byte in $ary.iter() {
             $v[$i] = *byte;
             $i += 1;
         }
-    }
+    };
 }
 
 macro_rules! push {
-    ( $v:ident << $ary:expr ) => {
+    ($v:ident << $ary:expr) => {
         for byte in $ary.iter() {
             $v.push(byte);
         }
-    }
+    };
 }
-
 
 fn gametitle() -> [u8; 32] {
     let mut gametitle: [u8; 32] = [0x00; 32];
@@ -46,14 +45,18 @@ fn gametitle() -> [u8; 32] {
     gametitle
 }
 
-fn read_block(emblem_data: &mut Vec<u8>,
-              image: &image::DynamicImage,
-              alpha_threshold: i8, i: u32, j: u32) {
+fn read_block(
+    emblem_data: &mut Vec<u8>,
+    image: &image::DynamicImage,
+    alpha_threshold: i8,
+    i: u32,
+    j: u32,
+) {
     let i = i as u32;
     let j = j as u32;
 
-    for x in i..i+4 {
-        for y in j..j+4 {
+    for x in i..i + 4 {
+        for y in j..j + 4 {
             let pixel = image.get_pixel(x, y).data;
             let r = pixel[0];
             let g = pixel[1];
@@ -61,13 +64,13 @@ fn read_block(emblem_data: &mut Vec<u8>,
             let a = pixel[3];
 
             let value: u16 = match a < alpha_threshold as u8 {
-                true => { 0x00 },
+                true => 0x00,
                 false => {
-                    let red   = (r / 8) as u16;
+                    let red = (r / 8) as u16;
                     let green = (g / 8) as u16;
-                    let blue  = (b / 8) as u16;
+                    let blue = (b / 8) as u16;
                     let alpha: u16 = 1;
-                    let value: u16 = 32768*alpha + 1024*red + 32*green + blue;
+                    let value: u16 = 32768 * alpha + 1024 * red + 32 * green + blue;
 
                     value
                 }
@@ -83,10 +86,8 @@ fn read_block(emblem_data: &mut Vec<u8>,
     }
 }
 
-
 const FZGX: [u8; 4] = *b"GFZE";
 const SEGA: [u8; 2] = *b"8P";
-
 
 /// I'm implementing Default for Memcard here because the F-Zero
 /// emblem file already has a bunch of fields pre-filled that should
@@ -94,37 +95,37 @@ const SEGA: [u8; 2] = *b"8P";
 impl Default for memcard::Memcard {
     fn default() -> Self {
         memcard::Memcard {
-            gamecode:      FZGX,
-            company:       SEGA,
-            reserved01:    0xFF,
-            banner_fmt:    0x02,
-            filename:     [0x00; 32],
-            timestamp:    [0x00; 4],
-            icon_addr:    [0x00, 0x00, 0x00, 0x60],
-            icon_fmt:     [0x00, 0x02],
-            icon_speed:   [0x00, 0x03],
-            permission:    0x04,
-            copy_counter:  0x00,
-            index:        [0x00, 0x00],
-            filesize8:    [0x00, 0x03],
-            reserved02:   [0xFF, 0xFF],
+            gamecode: FZGX,
+            company: SEGA,
+            reserved01: 0xFF,
+            banner_fmt: 0x02,
+            filename: [0x00; 32],
+            timestamp: [0x00; 4],
+            icon_addr: [0x00, 0x00, 0x00, 0x60],
+            icon_fmt: [0x00, 0x02],
+            icon_speed: [0x00, 0x03],
+            permission: 0x04,
+            copy_counter: 0x00,
+            index: [0x00, 0x00],
+            filesize8: [0x00, 0x03],
+            reserved02: [0xFF, 0xFF],
             comment_addr: [0x00, 0x00, 0x00, 0x04],
         }
     }
 }
 
 pub struct Emblem {
-  memcard: memcard::Memcard,
+    memcard: memcard::Memcard,
 
-  pub checksum:     [u8; 2],
-  something3:   [u8; 2], // 0x04 0x01
-  game_title:   [u8; 32], // "F-ZERO GX" 0x00...
-  file_comment: [u8; 60], // "YY/MM/DD HH:MM" 0x00...
+    pub checksum: [u8; 2],
+    something3: [u8; 2],    // 0x04 0x01
+    game_title: [u8; 32],   // "F-ZERO GX" 0x00...
+    file_comment: [u8; 60], // "YY/MM/DD HH:MM" 0x00...
 
-  pub banner_data:  [u8; 6144], // banner pixel data (92 x 32 px)
-  icon_data:    [u8; 2048], // icon pixel data (64 x 64 px)
-  emblem_data:  [u8; 8192], // emblem pixel data (64 x 64 px)
-  padding:      [u8; 8096] // 0x00 padding
+    pub banner_data: [u8; 6144], // banner pixel data (92 x 32 px)
+    icon_data: [u8; 2048],       // icon pixel data (64 x 64 px)
+    emblem_data: [u8; 8192],     // emblem pixel data (64 x 64 px)
+    padding: [u8; 8096],         // 0x00 padding
 }
 
 impl Default for Emblem {
@@ -132,17 +133,17 @@ impl Default for Emblem {
         let game_title = gametitle();
 
         Emblem {
-          memcard:       memcard::Memcard::default(),
+            memcard: memcard::Memcard::default(),
 
-          checksum:     [0x00; 2],
-          something3:   [0x04, 0x01],
-          game_title:   game_title, // "F-ZERO GX" 0x00...
-          file_comment: [0x00; 60], // "YY/MM/DD HH:MM" 0x00...
+            checksum: [0x00; 2],
+            something3: [0x04, 0x01],
+            game_title: game_title,   // "F-ZERO GX" 0x00...
+            file_comment: [0x00; 60], // "YY/MM/DD HH:MM" 0x00...
 
-          banner_data:  [0x00; 6144], // banner pixel data (92 x 32 px)
-          icon_data:    [0x00; 2048], // icon pixel data (64 x 64 px)
-          emblem_data:  [0x00; 8192], // emblem pixel data (64 x 64 px)
-          padding:      [0x00; 8096] // 0x00 padding
+            banner_data: [0x00; 6144], // banner pixel data (92 x 32 px)
+            icon_data: [0x00; 2048],   // icon pixel data (64 x 64 px)
+            emblem_data: [0x00; 8192], // emblem pixel data (64 x 64 px)
+            padding: [0x00; 8096],     // 0x00 padding
         }
     }
 }

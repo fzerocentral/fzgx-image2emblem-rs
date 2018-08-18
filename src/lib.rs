@@ -1,7 +1,7 @@
 pub mod checksum;
 pub mod emblem;
-pub mod image;
 pub mod gamecube;
+pub mod image;
 
 extern crate chrono;
 use chrono::*;
@@ -11,14 +11,14 @@ extern crate image as img;
 extern crate clap;
 
 pub fn short_name(seconds: f64) -> String {
-  let multiplier: f64 = 40500000f64;
-  let tick: u64 = (seconds * multiplier) as u64;
+    let multiplier: f64 = 40500000f64;
+    let tick: u64 = (seconds * multiplier) as u64;
 
-  format!("fze0200002000{:14X}.dat", tick as u64)
+    format!("fze0200002000{:14X}.dat", tick as u64)
 }
 
 pub fn full_name(filename: &str) -> String {
-  format!("8P-GFZE-{}.gci", filename)
+    format!("8P-GFZE-{}.gci", filename)
 }
 
 fn python_total_seconds(microseconds: i64) -> f64 {
@@ -31,11 +31,18 @@ pub fn seconds_since_2000(now: chrono::datetime::DateTime<UTC>) -> f64 {
 
     match duration.num_microseconds() {
         Some(ms) => python_total_seconds(ms),
-        None => panic!("No microseconds!")
+        None => panic!("No microseconds!"),
     }
 }
 
-pub fn make_emblem(img: &mut self::img::DynamicImage, matches: &clap::ArgMatches, short_name: String, seconds_since_2000: f64, now: chrono::datetime::DateTime<UTC>, alpha_threshold: i8) -> self::emblem::Emblem {
+pub fn make_emblem(
+    img: &mut self::img::DynamicImage,
+    matches: &clap::ArgMatches,
+    short_name: String,
+    seconds_since_2000: f64,
+    now: chrono::datetime::DateTime<UTC>,
+    alpha_threshold: i8,
+) -> self::emblem::Emblem {
     let mut emblem = self::emblem::Emblem::default();
     let mut img64 = self::image::crop(img);
     let img32 = self::image::resize(&mut img64);
@@ -46,7 +53,10 @@ pub fn make_emblem(img: &mut self::img::DynamicImage, matches: &clap::ArgMatches
 
     emblem.set_filename(short_name);
     emblem.set_timestamp(seconds_since_2000 as u32);
-    let comment = format!("{} (Created using Rust awesomeness)", now.format("%y/%m/%d %H:%M"));
+    let comment = format!(
+        "{} (Created using Rust awesomeness)",
+        now.format("%y/%m/%d %H:%M")
+    );
 
     emblem.set_comment(comment);
     emblem.set_emblem_data(img64, alpha_threshold);
