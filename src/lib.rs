@@ -12,8 +12,6 @@ use chrono::*;
 
 use ::image as img;
 
-extern crate clap;
-
 pub fn short_name(seconds: f64) -> String {
     let multiplier: f64 = 40500000f64;
     let tick: u64 = (seconds * multiplier) as u64;
