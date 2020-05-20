@@ -6,8 +6,6 @@ pub mod gamecube {
 pub mod image;
 
 use crate::gamecube::memcard::Region;
-
-extern crate chrono;
 use chrono::*;
 
 use ::image as img;
