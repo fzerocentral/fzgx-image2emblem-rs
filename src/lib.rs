@@ -1,6 +1,8 @@
 pub mod checksum;
 pub mod emblem;
-pub mod gamecube;
+pub mod gamecube {
+    pub mod memcard;
+}
 pub mod image;
 
 extern crate chrono;
