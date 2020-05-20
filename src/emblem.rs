@@ -87,7 +87,7 @@ fn read_block(
     }
 }
 
-const FZGX: [u8; 4] = *b"GFZE";
+const FZGX: [u8; 4] = *b"GFZP";
 const SEGA: [u8; 2] = *b"8P";
 
 /// I'm implementing Default for Memcard here because the F-Zero
