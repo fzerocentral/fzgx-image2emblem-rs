@@ -43,8 +43,8 @@ fn main() {
         .get_matches();
 
     let region = match matches.value_of("region").unwrap() {
-        "NTSC" => self::image2emblem::gamecube::memcard::Region::NTSC,
-        "PAL" => self::image2emblem::gamecube::memcard::Region::PAL,
+        "NTSC" => image2emblem::gamecube::memcard::Region::NTSC,
+        "PAL" => image2emblem::gamecube::memcard::Region::PAL,
         unknown_region => panic!("'{}' is not valid.  Region must be NTSC for PAL.", unknown_region),
     };
 
