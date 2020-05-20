@@ -55,8 +55,8 @@ fn read_block(
     let i = i as u32;
     let j = j as u32;
 
-    for x in i..i + 4 {
-        for y in j..j + 4 {
+    for y in i..i + 4 {
+        for x in j..j + 4 {
             let pixel = image.get_pixel(x, y).data;
             let r = pixel[0];
             let g = pixel[1];
