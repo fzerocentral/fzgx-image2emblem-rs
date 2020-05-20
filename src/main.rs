@@ -1,9 +1,3 @@
-extern crate byteorder;
-extern crate chrono;
-extern crate clap;
-extern crate image;
-extern crate image2emblem;
-
 use clap::{App, Arg};
 use std::fs::File;
 use std::io::prelude::*;
