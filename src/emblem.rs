@@ -7,8 +7,8 @@ use self::image::GenericImage;
 extern crate itertools;
 use self::itertools::Itertools;
 
-use super::gamecube::memcard;
-use checksum::checksum;
+use crate::gamecube::memcard;
+use crate::checksum::checksum;
 use self::memcard::Region;
 
 macro_rules! byte {
