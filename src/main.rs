@@ -28,6 +28,13 @@ fn main() {
                 .help("Crops the edges"),
         )
         .arg(
+            Arg::with_name("output-path")
+                .short("o")
+                .long("--output-path")
+                .value_name("PATH")
+                .help("Specify where the output should be placed"),
+        )
+        .arg(
             Arg::with_name("emblem-filename")
                 .help("Specify a custom emblem filename to put in place of the default timestamp."),
         )
@@ -45,6 +52,7 @@ fn main() {
     let seconds_since_2000 = image2emblem::seconds_since_2000(now);
     let short_name = image2emblem::short_name(seconds_since_2000);
     let full_name = image2emblem::full_name(&short_name);
+    let output_path = Path::new(matches.value_of("output-path").unwrap_or("")).join(full_name);
 
     let emblem = image2emblem::make_emblem(
         &mut img,
@@ -55,7 +63,8 @@ fn main() {
         alpha_threshold,
     );
 
-    let mut emblem_file = match File::create(full_name) {
+
+    let mut emblem_file = match File::create(output_path) {
         Ok(name) => name,
         Err(why) => panic!("couldn't create file: {}", why),
     };
