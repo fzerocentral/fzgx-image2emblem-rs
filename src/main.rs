@@ -28,6 +28,14 @@ fn main() {
                 .help("Crops the edges"),
         )
         .arg(
+            Arg::with_name("region")
+                .short("r")
+                .long("--region")
+                .help("Specifies which region the save game should be generated for. Accepts NTSC and PAL.")
+                .possible_values(&["NTSC", "PAL"])
+                .default_value("NTSC"),
+        )
+        .arg(
             Arg::with_name("output-path")
                 .short("o")
                 .long("--output-path")
@@ -40,7 +48,11 @@ fn main() {
         )
         .get_matches();
 
-    println!("Using input file: {}", matches.value_of("INPUT").unwrap());
+    let region = match matches.value_of("region").unwrap() {
+        "NTSC" => self::image2emblem::gamecube::memcard::Region::NTSC,
+        "PAL" => self::image2emblem::gamecube::memcard::Region::PAL,
+        unknown_region => panic!("'{}' is not valid.  Region must be NTSC for PAL.", unknown_region),
+    };
 
     let path = Path::new(matches.value_of("INPUT").unwrap());
     let mut img = match image::open(&path) {
@@ -61,8 +73,8 @@ fn main() {
         seconds_since_2000,
         now,
         alpha_threshold,
+        region
     );
-
 
     let mut emblem_file = match File::create(output_path) {
         Ok(name) => name,

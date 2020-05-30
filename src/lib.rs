@@ -6,6 +6,8 @@ pub mod image;
 extern crate chrono;
 use chrono::*;
 
+use gamecube::memcard::Region;
+
 extern crate image as img;
 
 extern crate clap;
@@ -42,6 +44,7 @@ pub fn make_emblem(
     seconds_since_2000: f64,
     now: chrono::datetime::DateTime<UTC>,
     alpha_threshold: i8,
+    region: Region
 ) -> self::emblem::Emblem {
     let mut emblem = self::emblem::Emblem::default();
     let mut img64 = self::image::crop(img);
@@ -51,6 +54,7 @@ pub fn make_emblem(
         self::image::trim_edges(&mut img64);
     }
 
+    emblem.set_gamecode(region);
     emblem.set_filename(short_name);
     emblem.set_timestamp(seconds_since_2000 as u32);
     let comment = format!(
