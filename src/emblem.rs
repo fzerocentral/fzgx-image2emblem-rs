@@ -9,6 +9,7 @@ use self::itertools::Itertools;
 
 use super::gamecube::memcard;
 use checksum::checksum;
+use self::memcard::Region;
 
 macro_rules! byte {
     ($i:ident, $v:ident << $elem:expr) => {
@@ -155,6 +156,10 @@ pub fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
 }
 
 impl Emblem {
+    pub fn set_gamecode(self: &mut Self, region: Region) {
+        self.memcard.set_region(region);
+    }
+
     pub fn set_filename(self: &mut Self, filename: String) {
         self.memcard.set_filename(filename);
     }

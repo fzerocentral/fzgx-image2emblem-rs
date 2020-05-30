@@ -3,6 +3,11 @@ use self::byteorder::{BigEndian, ByteOrder};
 
 use super::super::emblem::make_bytes;
 
+pub enum Region {
+    NTSC,
+    PAL,
+}
+
 pub struct Memcard {
     pub gamecode: [u8; 4], // GFZE
     pub company: [u8; 2],  // 8P
@@ -22,6 +27,13 @@ pub struct Memcard {
 }
 
 impl Memcard {
+    pub fn set_region(self: &mut Self, region: Region) {
+        match region {
+            Region::NTSC => self.gamecode = *b"GFZP",
+            Region::PAL => self.gamecode = *b"GFZE",
+        }
+    }
+
     pub fn set_filename(self: &mut Self, filename: String) {
         make_bytes(&mut self.filename, &filename.as_bytes());
     }
