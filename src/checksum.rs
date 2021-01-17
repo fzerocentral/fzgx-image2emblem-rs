@@ -21,7 +21,7 @@ pub fn checksum(bytes: Vec<&u8>) -> [u8; 2] {
     let mut buf = [0u8; 2];
     BigEndian::write_u16(&mut buf, checksum);
 
-    return buf;
+    buf
 }
 
 #[cfg(test)]

@@ -66,5 +66,5 @@ pub fn make_emblem(
     emblem.set_icon_data();
     emblem.set_checksum();
 
-    return emblem;
+    emblem
 }
