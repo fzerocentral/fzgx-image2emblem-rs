@@ -19,7 +19,7 @@ pub fn checksum(bytes: Vec<&u8>) -> [u8; 2] {
     }) ^ initial_mask;
 
     let mut buf = [0u8; 2];
-    byteorder::BigEndian::write_u16(&mut buf, checksum);
+    BigEndian::write_u16(&mut buf, checksum);
 
     return buf;
 }

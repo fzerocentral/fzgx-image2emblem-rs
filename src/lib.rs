@@ -42,7 +42,7 @@ pub fn make_emblem(
     seconds_since_2000: f64,
     now: chrono::datetime::DateTime<UTC>,
     alpha_threshold: i8,
-    region: Region
+    region: Region,
 ) -> self::emblem::Emblem {
     let mut emblem = self::emblem::Emblem::default();
     let mut img64 = self::image::crop(img);
