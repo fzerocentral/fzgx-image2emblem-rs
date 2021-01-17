@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0 (2021-01-17)
+
+* [internal] updated codebase to edition 2018.
+
 ## 0.3.0 (2020-05-30)
 
 * [feature] Add region flag so save file is generated accordingly.
