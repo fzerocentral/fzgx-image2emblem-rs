@@ -3,9 +3,22 @@ use self::byteorder::{BigEndian, ByteOrder};
 
 use super::super::emblem::make_bytes;
 
+#[derive(Debug)]
 pub enum Region {
     NTSC,
     PAL,
+}
+
+impl std::str::FromStr for Region {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "NTSC" => Ok(Region::NTSC),
+            "PAL" => Ok(Region::PAL),
+            _ => panic!("Unknown region specified")
+        }
+    }
 }
 
 pub struct Memcard {

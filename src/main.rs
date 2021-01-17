@@ -28,8 +28,8 @@ struct Program {
     output_path: String,
 
     /// Specifies which region the save game should be generated for. Accepts NTSC and PAL.
-    #[structopt(short, long, arg_enum, default_value="NTSC")]
-    region: image2emblem::gamecube::memcard::Region,
+    #[structopt(short, long, default_value="NTSC")]
+    region: image2emblem::gamecube::memcard::Region
 }
 
 fn main() {
