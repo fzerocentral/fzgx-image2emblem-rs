@@ -1,16 +1,14 @@
 pub mod checksum;
 pub mod emblem;
-pub mod gamecube;
+pub mod gamecube {
+    pub mod memcard;
+}
 pub mod image;
 
-extern crate chrono;
+use crate::gamecube::memcard::Region;
 use chrono::*;
 
-use gamecube::memcard::Region;
-
-extern crate image as img;
-
-extern crate clap;
+use ::image as img;
 
 pub fn short_name(seconds: f64) -> String {
     let multiplier: f64 = 40500000f64;

@@ -2,6 +2,8 @@
 name = "image2emblem"
 version = "0.3.0"
 authors = ["Ricardo Mendes <rokusu@gmail.com>"]
+edition = "2018"
+
 description = "Converts an image into an F-Zero GX emblem"
 documentation = "http://fzerocentral.github.io/fzgx-image2emblem-rs/image2emblem/index.html"
 homepage = "https://github.com/fzerocentral/fzgx-image2emblem-rs"

@@ -7,8 +7,8 @@ use self::image::GenericImage;
 extern crate itertools;
 use self::itertools::Itertools;
 
-use super::gamecube::memcard;
-use checksum::checksum;
+use crate::gamecube::memcard;
+use crate::checksum::checksum;
 use self::memcard::Region;
 
 macro_rules! byte {
@@ -87,7 +87,7 @@ fn read_block(
     }
 }
 
-const FZGX: [u8; 4] = *b"GFZE";
+const FZGX: [u8; 4] = *b"GFZP";
 const SEGA: [u8; 2] = *b"8P";
 
 /// I'm implementing Default for Memcard here because the F-Zero
