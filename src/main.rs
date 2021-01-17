@@ -45,7 +45,10 @@ fn main() {
     let region = match matches.value_of("region").unwrap() {
         "NTSC" => image2emblem::gamecube::memcard::Region::NTSC,
         "PAL" => image2emblem::gamecube::memcard::Region::PAL,
-        unknown_region => panic!("'{}' is not valid.  Region must be NTSC for PAL.", unknown_region),
+        unknown_region => panic!(
+            "'{}' is not valid.  Region must be NTSC for PAL.",
+            unknown_region
+        ),
     };
 
     let path = Path::new(matches.value_of("INPUT").unwrap());
@@ -67,7 +70,7 @@ fn main() {
         seconds_since_2000,
         now,
         alpha_threshold,
-        region
+        region,
     );
 
     let mut emblem_file = match File::create(output_path) {

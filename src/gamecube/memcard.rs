@@ -40,7 +40,7 @@ impl Memcard {
 
     pub fn set_timestamp(self: &mut Self, time: u32) {
         let mut buf = [0x00; 4];
-        byteorder::BigEndian::write_u32(&mut buf, time);
+        BigEndian::write_u32(&mut buf, time);
 
         self.timestamp = buf;
     }

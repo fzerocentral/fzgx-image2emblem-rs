@@ -7,9 +7,9 @@ use self::image::GenericImage;
 extern crate itertools;
 use self::itertools::Itertools;
 
-use crate::gamecube::memcard;
-use crate::checksum::checksum;
 use self::memcard::Region;
+use crate::checksum::checksum;
+use crate::gamecube::memcard;
 
 macro_rules! byte {
     ($i:ident, $v:ident << $elem:expr) => {
@@ -78,7 +78,7 @@ fn read_block(
             };
 
             let mut buf: [u8; 2] = [0x00; 2];
-            byteorder::BigEndian::write_u16(&mut buf, value);
+            BigEndian::write_u16(&mut buf, value);
 
             for byte in buf.iter() {
                 emblem_data.push(*byte);
