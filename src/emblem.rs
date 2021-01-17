@@ -39,13 +39,12 @@ fn gametitle() -> [u8; 32] {
     let mut gametitle: [u8; 32] = [0x00; 32];
     let fzgx = "F-Zero GX".as_bytes();
 
-    for i in 0..fzgx.len() {
-        gametitle[i] = fzgx[i];
-    }
+    gametitle[..fzgx.len()].clone_from_slice(&fzgx[..]);
 
     gametitle
 }
 
+#[allow(clippy::many_single_char_names)]
 fn read_block(
     emblem_data: &mut Vec<u8>,
     image: &image::DynamicImage,
@@ -131,14 +130,12 @@ pub struct Emblem {
 
 impl Default for Emblem {
     fn default() -> Self {
-        let game_title = gametitle();
-
         Emblem {
             memcard: memcard::Memcard::default(),
 
             checksum: [0x00; 2],
             something3: [0x04, 0x01],
-            game_title: game_title,   // "F-ZERO GX" 0x00...
+            game_title: gametitle(),  // "F-ZERO GX" 0x00...
             file_comment: [0x00; 60], // "YY/MM/DD HH:MM" 0x00...
 
             banner_data: [0x00; 6144], // banner pixel data (92 x 32 px)
@@ -150,29 +147,27 @@ impl Default for Emblem {
 }
 
 pub fn make_bytes(initial: &mut [u8], bytes: &[u8]) {
-    for i in 0..bytes.len() {
-        initial[i] = bytes[i];
-    }
+    initial[..bytes.len()].clone_from_slice(&bytes[..]);
 }
 
 impl Emblem {
-    pub fn set_gamecode(self: &mut Self, region: Region) {
+    pub fn set_gamecode(&mut self, region: Region) {
         self.memcard.set_region(region);
     }
 
-    pub fn set_filename(self: &mut Self, filename: String) {
+    pub fn set_filename(&mut self, filename: String) {
         self.memcard.set_filename(filename);
     }
 
-    pub fn set_timestamp(self: &mut Self, time: u32) {
+    pub fn set_timestamp(&mut self, time: u32) {
         self.memcard.set_timestamp(time);
     }
 
-    pub fn set_comment(self: &mut Self, comment: String) {
+    pub fn set_comment(&mut self, comment: String) {
         make_bytes(&mut self.file_comment, &comment.as_bytes());
     }
 
-    pub fn set_emblem_data(self: &mut Self, image: image::DynamicImage, alpha_threshold: i8) {
+    pub fn set_emblem_data(&mut self, image: image::DynamicImage, alpha_threshold: i8) {
         let mut v = Vec::new();
 
         for block_row in (0..image.width()).step(4) {
@@ -181,26 +176,22 @@ impl Emblem {
             }
         }
 
-        for i in 0..v.len() {
-            self.emblem_data[i] = v[i];
-        }
+        self.emblem_data[..v.len()].clone_from_slice(&v[..]);
     }
 
-    pub fn set_icon_data(self: &mut Self) {
+    pub fn set_icon_data(&mut self) {
         let icon = include_bytes!("../data/emblem_icon");
 
-        for i in 0..icon.len() {
-            self.icon_data[i] = icon[i];
-        }
+        self.icon_data[..icon.len()].clone_from_slice(&icon[..]);
     }
 
-    pub fn set_banner_data(self: &mut Self, image: image::DynamicImage, alpha_threshold: i8) {
+    pub fn set_banner_data(&mut self, image: image::DynamicImage, alpha_threshold: i8) {
         let mut v: Vec<u8> = Vec::new();
         let banner_file = include_bytes!("../data/emblem_banner_base");
         let mut chunked_banner = banner_file.chunks(0x200);
 
         for block_row in (0..32).step(4) {
-            for chunk in chunked_banner.nth(0) {
+            if let Some(chunk) = chunked_banner.next() {
                 for byte in chunk {
                     v.push(*byte);
                 }
@@ -211,12 +202,10 @@ impl Emblem {
             }
         }
 
-        for i in 0..v.len() {
-            self.banner_data[i] = v[i];
-        }
+        self.banner_data[..v.len()].clone_from_slice(&v[..]);
     }
 
-    pub fn set_checksum(self: &mut Self) {
+    pub fn set_checksum(&mut self) {
         let mut v = Vec::new();
 
         push!(v << self.something3);
@@ -230,7 +219,7 @@ impl Emblem {
         self.checksum = checksum(v);
     }
 
-    pub fn as_bytes(self: Self) -> [u8; 24640] {
+    pub fn as_bytes(&self) -> [u8; 24640] {
         let mut v: [u8; 24640] = [0x00; 24640];
         let mut index = 0;
 

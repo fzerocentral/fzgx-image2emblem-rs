@@ -27,18 +27,18 @@ pub struct Memcard {
 }
 
 impl Memcard {
-    pub fn set_region(self: &mut Self, region: Region) {
+    pub fn set_region(&mut self, region: Region) {
         match region {
             Region::NTSC => self.gamecode = *b"GFZP",
             Region::PAL => self.gamecode = *b"GFZE",
         }
     }
 
-    pub fn set_filename(self: &mut Self, filename: String) {
+    pub fn set_filename(&mut self, filename: String) {
         make_bytes(&mut self.filename, &filename.as_bytes());
     }
 
-    pub fn set_timestamp(self: &mut Self, time: u32) {
+    pub fn set_timestamp(&mut self, time: u32) {
         let mut buf = [0x00; 4];
         BigEndian::write_u32(&mut buf, time);
 
